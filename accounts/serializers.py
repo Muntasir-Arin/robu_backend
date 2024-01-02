@@ -16,9 +16,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class RobuSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'name', 'date_of_birth', 'student_id', 'secondary_email', 'phone_number',
-                  'position', 'department', 'avatar', 'rs_status', 'facebook_profile', 'linkedin_link',
-                  'robu_start', 'robu_end', 'bracu_start', 'blood_group', 'gender',  'org')
+        fields = '__all__'
 
 class PublicUserSerializer(serializers.ModelSerializer):
     class Meta:

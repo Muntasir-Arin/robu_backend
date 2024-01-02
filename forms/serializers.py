@@ -1,18 +1,17 @@
+# serializers.py
 from rest_framework import serializers
-from .models import Applicant, DeptChoice
+from .models import applicants, Dept
+from accounts.serializers import RobuSerializer
 
-class DeptChoiceSerializer(serializers.ModelSerializer):
+class DeptSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DeptChoice
-        fields = ('id', 'name')
+        model = Dept
+        fields = '__all__'
 
-class ApplicantSerializer(serializers.ModelSerializer):
-    interview_date = serializers.DateField(required=False)
-    interview_time = serializers.TimeField(required=False)
+class ApplicantsSerializer(serializers.ModelSerializer):
+    user = RobuSerializer()  
+    dept_choice = DeptSerializer(many=True)
 
     class Meta:
-        model = Applicant
-        fields = ('id', 'student', 'experience', 'interview_date', 'interview_time', 'interviewed')
-
-class ApplicantDetailSerializer(ApplicantSerializer):
-    department_choices = DeptChoiceSerializer(many=True, read_only=True)
+        model = applicants
+        fields = '__all__'

@@ -1,31 +1,47 @@
+# views.py
 from rest_framework import generics
+from rest_framework import status
 from rest_framework.response import Response
-from .models import Applicant, CreatedModel, DeptChoice
-from .serializers import ApplicantSerializer, ApplicantDetailSerializer, DeptChoiceSerializer
+from rest_framework.permissions import IsAuthenticated
+from .models import applicants
+from .serializers import ApplicantsSerializer
 
-class CreateApplicantView(generics.CreateAPIView):
-    serializer_class = ApplicantSerializer
+class ApplicantsCreateView(generics.CreateAPIView):
+    serializer_class = ApplicantsSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        table_name = self.request.data.get('name')
-        Applicant._meta.db_table = table_name
-        applicant_instance = serializer.save()
+        # Automatically set the user field from the request's authenticated user
+        serializer.save(user=self.request.user)
 
-        CreatedModel.objects.create(name=table_name)
+    def create(self, request, *args, **kwargs):
+        # Override create method to customize the response
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        dept_table_name = f"dept_{CreatedModel.objects.get(name=applicant_instance._meta.db_table).created_at.year}"
-        DeptChoice._meta.db_table = dept_table_name
-        DeptChoice.objects.create(name=dept_table_name)
+class ApplicantsUpdateView(generics.UpdateAPIView):
+    queryset = applicants.objects.all()
+    serializer_class = ApplicantsSerializer
+    permission_classes = [IsAuthenticated]
 
-class RetrieveApplicantView(generics.RetrieveAPIView):
-    queryset = Applicant.objects.all()
-    serializer_class = ApplicantDetailSerializer
+    def update(self, request, *args, **kwargs):
+        # Override update method to customize the response
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
-    def get(self, request, *args, **kwargs):
-        table_name = self.request.data.get('table_name')
-        Applicant._meta.db_table = table_name
-        return self.retrieve(request, *args, **kwargs)
+class ApplicantsDeleteView(generics.DestroyAPIView):
+    queryset = applicants.objects.all()
+    serializer_class = ApplicantsSerializer
+    permission_classes = [IsAuthenticated]
 
-class PatchApplicantView(generics.UpdateAPIView):
-    queryset = Applicant.objects.all()
-    serializer_class = ApplicantSerializer
+    def destroy(self, request, *args, **kwargs):
+        # Override destroy method to customize the response
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
