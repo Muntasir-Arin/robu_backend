@@ -5,7 +5,7 @@ from django.utils import timezone
 class Dept(models.Model):
     choice = models.TextField(null=True, blank=True)
     rank = models.IntegerField(blank=False)
-    project = models.ForeignKey('Applicant', on_delete=models.CASCADE, null=True, related_name='applicants')
+    user = models.ForeignKey('Applicant', on_delete=models.CASCADE, null=True, related_name='applicants')
 
 class Applicant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
