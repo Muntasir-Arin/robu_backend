@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import CurrentPanelListAPIView, MemberListView, PanelListAPIView, PrivateUserProfileView, PublicUserProfileView, RobuUpdateView, UserProfileUpdateView
+from .views import CurrentPanelListAPIView, GetUserPositionView, MemberListView, PanelListAPIView, PrivateUserProfileView, PublicUserProfileView, RobuUpdateView, UserProfileUpdateView
 
 urlpatterns = [
     path('auth/', include('djoser.urls')),
@@ -9,6 +9,7 @@ urlpatterns = [
     path('private-profile/<int:id>/', PrivateUserProfileView.as_view(), name='private-profile'),
     path('panels/', PanelListAPIView.as_view(), name='panel-list'),
     path('secure/', RobuUpdateView.as_view(), name='secure'),
+    path('position/', GetUserPositionView.as_view(), name='position'),
     path('current-panels/', CurrentPanelListAPIView.as_view(), name='curr-panel-list'),
     path('member-list/', MemberListView.as_view(), name='member-list')  #/api/member-list/?filter=current
 ]

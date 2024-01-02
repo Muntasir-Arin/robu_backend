@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions
 from .models import User
-from .serializers import PublicUserSerializer, RobuSerializer, UserProfileSerializer, PanelSerializer
+from .serializers import PositionSerializer, PublicUserSerializer, RobuSerializer, UserProfileSerializer, PanelSerializer
 from django.db.models import F
 from django.db.models.functions import ExtractYear
 from django.utils import timezone
@@ -118,3 +118,10 @@ class CurrentPanelListAPIView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+
+class GetUserPositionView(generics.RetrieveAPIView):
+    serializer_class = PositionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    def get_object(self):
+        return self.request.user

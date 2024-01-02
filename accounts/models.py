@@ -4,7 +4,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 class UserManager(BaseUserManager):
     def create_user(self, email, name, date_of_birth=None, student_id=None, secondary_email=None, phone_number=None,
                     position='Not a Member', department=None, avatar=None, rs_status=None, facebook_profile=None,
-                    linkedin_link=None, robu_start=None, robu_end=None, bracu_start=None, password=None):
+                    linkedin_link=None, robu_start=None, robu_end=None, bracu_start=None, password=None, org= None):
         if not email:
             raise ValueError('User must have an email address')
         user = self.model(
@@ -23,6 +23,7 @@ class UserManager(BaseUserManager):
             robu_start=robu_start,
             robu_end=robu_end,
             bracu_start=bracu_start,
+            org=org
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -66,6 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     position = models.CharField(max_length=255, default='Not a Member')
     department = models.CharField(max_length=255, null=True, blank=True)
+    org = models.CharField(max_length=255, null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     rs_status = models.CharField(max_length=255, null=True, blank=True)
     facebook_profile = models.URLField(null=True, blank=True)
@@ -77,6 +79,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin=models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    gender = models.CharField(max_length=55, null=True, blank=True)
+    blood_group = models.CharField(max_length=55, null=True, blank=True)
 
     objects = UserManager()
 
