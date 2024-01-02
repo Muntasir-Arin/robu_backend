@@ -14,4 +14,12 @@ class ApplicantsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Applicant
+        exclude = ['status', 'interviewed', 'application_date', 'interview_time']
+
+class InterviewSerializer(serializers.ModelSerializer):
+    user = RobuSerializer()  
+    dept_choice = DeptSerializer(many=True)
+
+    class Meta:
+        model = Applicant
         fields = '__all__'

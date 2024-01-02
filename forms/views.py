@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Applicant
-from .serializers import ApplicantsSerializer
+from .serializers import ApplicantsSerializer, InterviewSerializer
 
 class IsAdminOrInterviewer(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -59,3 +59,16 @@ class ApplicantsInfoView(generics.ListAPIView):
         applicants = self.get_queryset()
         data = [{'id': applicant.id, 'user': applicant.user.id} for applicant in applicants]
         return Response(data)
+    
+
+class InterviewUpdateView(generics.UpdateAPIView):
+    queryset = Applicant.objects.all()
+    serializer_class = InterviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
