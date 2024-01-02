@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from .models import applicants, Dept
+from .models import Applicant, Dept
 from accounts.serializers import RobuSerializer
 
 class DeptSerializer(serializers.ModelSerializer):
@@ -13,5 +13,5 @@ class ApplicantsSerializer(serializers.ModelSerializer):
     dept_choice = DeptSerializer(many=True)
 
     class Meta:
-        model = applicants
+        model = Applicant
         fields = '__all__'

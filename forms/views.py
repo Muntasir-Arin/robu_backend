@@ -1,10 +1,14 @@
-# views.py
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import applicants
+from .models import Applicant
 from .serializers import ApplicantsSerializer
+
+class IsAdminOrInterviewer(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Check if the user is an admin or president
+        return request.user.is_admin_or_panel or request.user.is_admin_or_dads
 
 class ApplicantsCreateView(generics.CreateAPIView):
     serializer_class = ApplicantsSerializer
@@ -23,7 +27,7 @@ class ApplicantsCreateView(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class ApplicantsUpdateView(generics.UpdateAPIView):
-    queryset = applicants.objects.all()
+    queryset = Applicant.objects.all()
     serializer_class = ApplicantsSerializer
     permission_classes = [IsAuthenticated]
 
@@ -36,7 +40,7 @@ class ApplicantsUpdateView(generics.UpdateAPIView):
         return Response(serializer.data)
 
 class ApplicantsDeleteView(generics.DestroyAPIView):
-    queryset = applicants.objects.all()
+    queryset = Applicant.objects.all()
     serializer_class = ApplicantsSerializer
     permission_classes = [IsAuthenticated]
 
@@ -45,3 +49,13 @@ class ApplicantsDeleteView(generics.DestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ApplicantsInfoView(generics.ListAPIView):
+    queryset = Applicant.objects.all()
+    serializer_class = ApplicantsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        applicants = self.get_queryset()
+        data = [{'id': applicant.id, 'user': applicant.user.id} for applicant in applicants]
+        return Response(data)
