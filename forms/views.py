@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Applicant
-from .serializers import ApplicantsSerializer, InterviewSerializer
+from .serializers import ApplicantsSerializer, ApplicantsSerializer2, InterviewSerializer
 
 class IsAdminOrInterviewer(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -11,7 +11,7 @@ class IsAdminOrInterviewer(permissions.BasePermission):
         return request.user.is_admin_or_panel or request.user.is_admin_or_dads
 
 class ApplicantsCreateView(generics.CreateAPIView):
-    serializer_class = ApplicantsSerializer
+    serializer_class = ApplicantsSerializer2
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -25,7 +25,7 @@ class ApplicantsCreateView(generics.CreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
+    
 class ApplicantsUpdateView(generics.UpdateAPIView):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantsSerializer
@@ -51,13 +51,16 @@ class ApplicantsDeleteView(generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ApplicantsInfoView(generics.ListAPIView):
-    queryset = Applicant.objects.all()
     serializer_class = ApplicantsSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        applicants = self.get_queryset()
-        data = [{'id': applicant.id, 'user': applicant.user.id} for applicant in applicants]
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Applicant.objects.filter(user_id=user_id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        data = [{'id': applicant.id} for applicant in queryset]
         return Response(data)
     
 

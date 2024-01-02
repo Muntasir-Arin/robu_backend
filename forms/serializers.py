@@ -23,3 +23,10 @@ class InterviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Applicant
         fields = '__all__'
+
+class ApplicantsSerializer2(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Applicant
+        exclude = ['status', 'interviewed', 'application_date', 'interview_time']
