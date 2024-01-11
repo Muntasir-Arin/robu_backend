@@ -2,9 +2,9 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, date_of_birth=None, student_id=None, secondary_email=None, phone_number=None,
-                    position='Not a Member', department=None, avatar=None, rs_status=None, facebook_profile=None,
-                    linkedin_link=None, robu_start=None, robu_end=None, bracu_start=None, password=None, org= None):
+    def create_user(self, email, name,org, date_of_birth=None, student_id=None, secondary_email=None, phone_number=None,
+                    department=None, avatar=None, rs_status=None, facebook_profile=None,
+                    linkedin_link=None, robu_start=None, robu_end=None, bracu_start=None, password=None):
         if not email:
             raise ValueError('User must have an email address')
         user = self.model(
@@ -14,7 +14,6 @@ class UserManager(BaseUserManager):
             student_id=student_id,
             secondary_email=secondary_email,
             phone_number=phone_number,
-            position=position,
             department=department,
             avatar=avatar,
             rs_status=rs_status,
@@ -23,7 +22,8 @@ class UserManager(BaseUserManager):
             robu_start=robu_start,
             robu_end=robu_end,
             bracu_start=bracu_start,
-            org=org
+            org=org,
+            
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -68,9 +68,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     position = models.CharField(max_length=255, default='Not a Member')
     department = models.CharField(max_length=255, null=True, blank=True)
     org = models.CharField(max_length=255, null=True, blank=True)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True, default='avatars/default.jpg')
     rs_status = models.CharField(max_length=255, null=True, blank=True)
     facebook_profile = models.URLField(null=True, blank=True)
+    insta_link = models.URLField(null=True, blank=True)
     linkedin_link = models.URLField(null=True, blank=True)
     robu_start = models.DateField(null=True, blank=True)
     robu_end = models.DateField(null=True, blank=True)
@@ -81,11 +82,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateTimeField(auto_now=True)
     gender = models.CharField(max_length=55, null=True, blank=True)
     blood_group = models.CharField(max_length=55, null=True, blank=True)
+    robu_department = models.CharField(max_length=255, null=True, blank=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS=['name', 'is_admin']
+    REQUIRED_FIELDS=['name', 'is_admin', 'org']
 
     def __str__(self):
         return self.email

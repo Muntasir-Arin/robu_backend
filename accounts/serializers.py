@@ -3,16 +3,12 @@ from accounts.models import User
 from rest_framework import serializers
 
 
-class PositionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('position',)
-
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('name', 'date_of_birth', 'student_id', 'secondary_email', 'phone_number', 'avatar', 'rs_status', 'facebook_profile', 'linkedin_link', 'bracu_start' , 'blood_group', 'gender', 'org')
-
+        fields = ('name', 'date_of_birth', 'insta_link', 'robu_department', 'student_id', 'secondary_email', 'phone_number', 'avatar', 'rs_status', 'facebook_profile', 'linkedin_link', 'bracu_start' , 'blood_group', 'gender', 'org')
+        read_only_fields = ('robu_department',)
+        
 class RobuSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

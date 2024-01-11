@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions
 from .models import User
-from .serializers import PositionSerializer, PublicUserSerializer, RobuSerializer, UserProfileSerializer, PanelSerializer
+from .serializers import PublicUserSerializer, RobuSerializer, UserProfileSerializer, PanelSerializer
 from django.db.models import F
 from django.db.models.functions import ExtractYear
 from django.utils import timezone
@@ -67,17 +67,15 @@ class PrivateUserProfileView(generics.RetrieveAPIView):
     serializer_class = PublicUserSerializer
     lookup_field = 'id'
 
-class RobuUpdateView(generics.RetrieveUpdateAPIView):
+class RobuUpdateView(generics.ListCreateAPIView, generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = RobuSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrPresident]
 
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
-
     def get_object(self):
-        return self.request.user
-
+        obj = self.get_queryset().get(id=self.kwargs["pk"])
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 class PanelListAPIView(generics.ListAPIView):
     serializer_class = PanelSerializer
@@ -118,10 +116,3 @@ class CurrentPanelListAPIView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
-
-class GetUserPositionView(generics.RetrieveAPIView):
-    serializer_class = PositionSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    def get_object(self):
-        return self.request.user
