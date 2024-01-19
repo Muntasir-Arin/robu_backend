@@ -3,8 +3,8 @@ from .views import ApplicantsCreateView, ApplicantsUpdateView, ApplicantsDeleteV
 
 urlpatterns = [
     path('applicants/', ApplicantsCreateView.as_view(), name='create-applicant'),
-    path('applicants/<int:pk>/', ApplicantsUpdateView.as_view(), name='update-applicant'),
+    path('applicants/<int:pk>/', ApplicantsUpdateView.as_view(), name='view/update-applicant'),
     path('applicants/<int:pk>/delete/', ApplicantsDeleteView.as_view(), name='delete-applicant'),
     path('applicants/info/', ApplicantsInfoView.as_view(), name='applicants-info'),
-     path('applicants/<int:pk>/interview/', InterviewUpdateView.as_view(), name='update-interview'),
+     path('applicants/<str:custom_id>/interview/', InterviewUpdateView.as_view(), name='update-interview'), #/api/applicants/22101525_spring20699/interview/
 ]

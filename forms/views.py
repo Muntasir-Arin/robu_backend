@@ -26,9 +26,9 @@ class ApplicantsCreateView(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
-class ApplicantsUpdateView(generics.UpdateAPIView):
+class ApplicantsUpdateView(generics.UpdateAPIView, generics.RetrieveAPIView):
     queryset = Applicant.objects.all()
-    serializer_class = ApplicantsSerializer
+    serializer_class = ApplicantsSerializer2
     permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
@@ -41,7 +41,7 @@ class ApplicantsUpdateView(generics.UpdateAPIView):
 
 class ApplicantsDeleteView(generics.DestroyAPIView):
     queryset = Applicant.objects.all()
-    serializer_class = ApplicantsSerializer
+    serializer_class = ApplicantsSerializer2
     permission_classes = [IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
@@ -51,8 +51,8 @@ class ApplicantsDeleteView(generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ApplicantsInfoView(generics.ListAPIView):
-    serializer_class = ApplicantsSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = ApplicantsSerializer2
+    permission_classes = [IsAuthenticated,IsAdminOrInterviewer]
 
     def get_queryset(self):
         user_id = self.request.user.id
@@ -64,14 +64,14 @@ class ApplicantsInfoView(generics.ListAPIView):
         return Response(data)
     
 
-class InterviewUpdateView(generics.UpdateAPIView):
+class InterviewUpdateView(generics.UpdateAPIView, generics.RetrieveAPIView):
     queryset = Applicant.objects.all()
     serializer_class = InterviewSerializer
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [IsAuthenticated, IsAdminOrInterviewer]
+    lookup_field = 'custom_id'
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
