@@ -7,13 +7,15 @@ class Applicant(models.Model):
     custom_id = models.CharField(max_length=100, primary_key=True, editable=False, default="")
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     about = models.TextField(null=True, blank=True)
-    status = models.CharField(max_length=100, blank=False, default='not selected')
+    status = models.CharField(max_length=100, blank=False, null=True)
     application_date = models.DateTimeField(default=timezone.now)
     interview_time = models.DateTimeField(blank=True, null=True)
     interviewed = models.BooleanField(default=False) 
-    dept_choice = models.CharField(max_length=200, blank=True, null=True)
+    dept_choice = models.CharField(max_length=200, blank=True, null=True)   
     drive_link = models.CharField(max_length=200, blank=True, null=True)
     semester = models.CharField(max_length=100, blank=False, null=False, default='spring2049')
+    assigned_department = models.CharField(max_length=200, blank=True, null=True)
+    feedback = models.TextField(null=True, blank=True)
     
     class Meta:
         constraints = [

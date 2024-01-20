@@ -8,7 +8,7 @@ class ApplicantsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Applicant
-        exclude = ['status', 'interviewed', 'application_date', 'interview_time']
+        exclude = ['status', 'interviewed', 'application_date', 'interview_time', 'assigned_department', 'feedback']
 
 class InterviewSerializer(serializers.ModelSerializer):
     user = RobuSerializer()  
@@ -22,4 +22,4 @@ class ApplicantsSerializer2(serializers.ModelSerializer):
 
     class Meta:
         model = Applicant
-        exclude = ['status', 'interviewed', 'application_date', 'interview_time']
+        exclude = ['status', 'interviewed', 'application_date', 'interview_time', 'assigned_department', 'feedback']
