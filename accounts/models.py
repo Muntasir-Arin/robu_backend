@@ -82,6 +82,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     gender = models.CharField(max_length=55, null=True, blank=True)
     blood_group = models.CharField(max_length=55, null=True, blank=True)
     robu_department = models.CharField(max_length=255, null=True, blank=True)
+    is_verified = models.BooleanField(default=False)
+    verification_token = models.CharField(max_length=255, blank=True, null=True)
 
     objects = UserManager()
 

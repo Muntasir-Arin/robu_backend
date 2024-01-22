@@ -28,5 +28,8 @@ class Applicant(models.Model):
         existing_applicant = Applicant.objects.filter(user=self.user, semester=self.semester).exclude(pk=self.pk).first()
         if existing_applicant:
             raise ValidationError({"detail": "User already has an application for this semester."})
+        
+        if Applicant.objects.filter(custom_id=self.custom_id).exclude(pk=self.pk).exists():
+            raise ValidationError({"detail": "Duplicate custom_id for user and semester combination."})
 
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs)   

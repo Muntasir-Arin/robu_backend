@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import generics, permissions
 from .models import User
 from .serializers import PublicUserSerializer, RobuSerializer, UserProfileSerializer, PanelSerializer
@@ -5,6 +6,15 @@ from django.db.models import F
 from django.db.models.functions import ExtractYear
 from django.utils import timezone
 from rest_framework.response import Response
+from django.core.signing import TimestampSigner, BadSignature
+from django.utils.http import urlsafe_base64_decode
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework import status
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -116,3 +126,54 @@ class CurrentPanelListAPIView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+
+#-----------------------------------------------------------------------------
+class VerifyEmailView(APIView):
+    def get(self, request, user_id, token):
+        user = get_object_or_404(User, id=user_id)
+
+        # Check if the token is valid
+        if self.validate_verification_token(user, token):
+            user.is_verified = True
+            user.save()
+            return Response({'detail': 'Email verified successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def validate_verification_token(self, user, token):
+        try:
+            signer = TimestampSigner()
+            user_id = signer.unsign(token, max_age=settings.VERIFICATION_TOKEN_EXPIRATION)
+            user_id = force_str(urlsafe_base64_decode(user_id))
+            return str(user_id) == str(user.id)
+        except BadSignature:
+            return False
+        
+class ResendVerificationEmailView(APIView):
+    def post(self, request):
+        email = request.data.get('email', '')
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.is_verified:
+            return Response({'detail': 'User is already verified'}, status=status.HTTP_400_BAD_REQUEST)
+
+        self.send_verification_email(user)
+        return Response({'detail': 'Verification email sent successfully'}, status=status.HTTP_200_OK)
+
+    def send_verification_email(self, user):
+        signer = TimestampSigner()
+        user_id = urlsafe_base64_encode(force_bytes(user.id))
+        token = signer.sign(user_id)
+        token = token.decode('utf-8')
+        user.verification_token = token
+        user.save()
+        subject = 'Verify your email'
+        message = render_to_string('email/verification_email.txt', {'user': user, 'token': token})
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [user.email]
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)

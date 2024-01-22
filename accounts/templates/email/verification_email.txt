@@ -1,0 +1,11 @@
+Hello {{ user.username }},
+
+Click the following link to verify your email:
+{{ protocol }}://{{ domain }}{% url 'verify-email' user_id=user.id token=token %}
+
+This link is valid for 24 hours.
+
+If you didn't request this verification, please ignore this email.
+
+Best regards,
+Robu Dev Team
