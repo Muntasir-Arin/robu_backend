@@ -30,9 +30,9 @@ class ApplicantsUpdateView(generics.UpdateAPIView, generics.RetrieveAPIView):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantsSerializer2
     permission_classes = [IsAuthenticated]
+    lookup_field = 'custom_id'
 
     def update(self, request, *args, **kwargs):
-        # Override update method to customize the response
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -43,12 +43,13 @@ class ApplicantsDeleteView(generics.DestroyAPIView):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantsSerializer2
     permission_classes = [IsAuthenticated]
+    lookup_field = 'custom_id'
 
     def destroy(self, request, *args, **kwargs):
-        # Override destroy method to customize the response
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ApplicantsInfoView(generics.ListAPIView):
     serializer_class = ApplicantsSerializer2
@@ -60,7 +61,8 @@ class ApplicantsInfoView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        data = [{'id': applicant.id} for applicant in queryset]
+        
+        data = [{'id': applicant.custom_id} for applicant in queryset]
         return Response(data)
     
 
