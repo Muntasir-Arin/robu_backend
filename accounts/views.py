@@ -151,13 +151,11 @@ class VerifyEmailView(APIView):
             return False
         
 class ResendVerificationEmailView(APIView):
-    def post(self, request):
-        email = request.data.get('email', '')
+    def get(self, request):
+        user = request.user
 
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        if not user.is_authenticated:
+            return Response({'detail': 'User not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
         if user.is_verified:
             return Response({'detail': 'User is already verified'}, status=status.HTTP_400_BAD_REQUEST)
@@ -169,11 +167,10 @@ class ResendVerificationEmailView(APIView):
         signer = TimestampSigner()
         user_id = urlsafe_base64_encode(force_bytes(user.id))
         token = signer.sign(user_id)
-        token = token.decode('utf-8')
         user.verification_token = token
         user.save()
         subject = 'Verify your email'
-        message = render_to_string('email/verification_email.txt', {'user': user, 'token': token})
+        message = render_to_string('email/verification_email.html', {'user': user, 'token': token})
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [user.email]
-        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        send_mail(subject, message, from_email, recipient_list, html_message=message, fail_silently=False)

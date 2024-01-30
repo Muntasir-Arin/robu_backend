@@ -37,7 +37,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -89,8 +88,8 @@ DATABASES = {
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'muntasirarin@gmail.com'
-EMAIL_HOST_PASSWORD = 'ncbfzypltsqfzsva'
+EMAIL_HOST_USER = 'hbro68282@gmail.com'
+EMAIL_HOST_PASSWORD = 'rqerxjasbrlpbtsq'
 EMAIL_USE_TLS = True
 
 # Password validation
@@ -189,10 +188,5 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
+VERIFICATION_TOKEN_EXPIRATION = 24 * 60 * 60  # 24 hours in seconds
 
-# STORAGES = {
-#     # ...
-#     "staticfiles": {
-#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-#     },
-# }

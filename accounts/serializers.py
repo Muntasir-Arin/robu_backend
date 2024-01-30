@@ -33,26 +33,24 @@ class UserCreateSerializer(UserCreateSerializer):
         model = User
         fields = ('id', 'email', 'name', 'org', 'password')
 
-    # def create(self, validated_data):
-    #     user = super().create(validated_data)
-    #     user.is_verified = False
-    #     user.save()
-    #     self.send_verification_email(user)
-    #     return user
+    def create(self, validated_data):
+        user = super().create(validated_data)
+        user.is_verified = False
+        user.save()
+        self.send_verification_email(user)
+        return user
 
     def send_verification_email(self, user):
         signer = TimestampSigner()
         user_id = urlsafe_base64_encode(force_bytes(user.id))
         token = signer.sign(user_id)
-        token = token.decode('utf-8')
         user.verification_token = token
         user.save()
-
         subject = 'Verify your email'
-        message = render_to_string('email/verification_email.txt', {'user': user, 'token': token})
+        message = render_to_string('email/verification_email.html', {'user': user, 'token': token})
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [user.email]
-        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        send_mail(subject, message, from_email, recipient_list, html_message=message, fail_silently=False)
 
 
 class PanelSerializer(serializers.Serializer):

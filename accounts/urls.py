@@ -11,7 +11,7 @@ urlpatterns = [
     path('secure/', RobuUpdateView.as_view(), name='user-list'),
     path('secure/<int:pk>/', RobuUpdateView.as_view(), name='user-detail'),
     path('current-panels/', CurrentPanelListAPIView.as_view(), name='curr-panel-list'),
-    path('member-list/', MemberListView.as_view(), name='member-list'),  #/api/member-list/?filter=current
-    path('api/auth/verify-email/<int:user_id>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
-    path('api/auth/resend-verification/', ResendVerificationEmailView.as_view(), name='resend-verification'),
+    path('member-list/', MemberListView.as_view(), name='member-list'),
+    path('auth/verify-email/<int:user_id>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
+    path('auth/resend-verification/', ResendVerificationEmailView.as_view(), name='resend-verification'),
 ]

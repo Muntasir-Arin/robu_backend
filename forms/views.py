@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Applicant
-from .serializers import ApplicantsSerializer, ApplicantsSerializer2, InterviewSerializer
+from .serializers import  ApplicantsSerializer, InterviewSerializer
 
 class IsAdminOrInterviewer(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -11,7 +11,7 @@ class IsAdminOrInterviewer(permissions.BasePermission):
         return request.user.is_admin_or_panel or request.user.is_admin_or_dads
 
 class ApplicantsCreateView(generics.CreateAPIView):
-    serializer_class = ApplicantsSerializer2
+    serializer_class = ApplicantsSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -28,7 +28,7 @@ class ApplicantsCreateView(generics.CreateAPIView):
     
 class ApplicantsUpdateView(generics.UpdateAPIView, generics.RetrieveAPIView):
     queryset = Applicant.objects.all()
-    serializer_class = ApplicantsSerializer2
+    serializer_class = ApplicantsSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'custom_id'
 
@@ -41,7 +41,7 @@ class ApplicantsUpdateView(generics.UpdateAPIView, generics.RetrieveAPIView):
 
 class ApplicantsDeleteView(generics.DestroyAPIView):
     queryset = Applicant.objects.all()
-    serializer_class = ApplicantsSerializer2
+    serializer_class = ApplicantsSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'custom_id'
 
@@ -52,7 +52,7 @@ class ApplicantsDeleteView(generics.DestroyAPIView):
 
 
 class ApplicantsInfoView(generics.ListAPIView):
-    serializer_class = ApplicantsSerializer2
+    serializer_class = ApplicantsSerializer
     permission_classes = [IsAuthenticated,IsAdminOrInterviewer]
 
     def get_queryset(self):
