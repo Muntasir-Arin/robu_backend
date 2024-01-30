@@ -2,8 +2,8 @@ from rest_framework import generics, permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Applicant
-from .serializers import  ApplicantsSerializer, InterviewSerializer
+from .models import Applicant, IntraEventFormSubmission
+from .serializers import  ApplicantsSerializer, InterviewSerializer, IntraEventFormSerializer, IntraEventFormSubmissionSerializer
 
 class IsAdminOrInterviewer(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -77,3 +77,50 @@ class InterviewUpdateView(generics.UpdateAPIView, generics.RetrieveAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+    
+
+#Intra  Event ----------------------------------------------------------------------------------
+class IntraEventFormSubmissionCreateUpdateView(generics.CreateAPIView, generics.UpdateAPIView):
+    queryset = IntraEventFormSubmission.objects.all()
+    serializer_class = IntraEventFormSubmissionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class UserSpecificSubmissionsView(generics.ListAPIView):
+    serializer_class = IntraEventFormSubmissionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        event_name = self.request.query_params.get('event_name', None)
+        return IntraEventFormSubmission.objects.filter(user_id=user_id, event_name=event_name)
+
+class AllSubmissionsView(generics.ListAPIView):
+    serializer_class = IntraEventFormSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrInterviewer]
+
+    def get_queryset(self):
+        event_name = self.request.query_params.get('event_name', None)
+        return IntraEventFormSubmission.objects.filter(event_name=event_name)
+
+class PendingSubmissionsView(generics.ListAPIView):
+    serializer_class = IntraEventFormSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrInterviewer]
+
+    def get_queryset(self):
+        event_name = self.request.query_params.get('event_name', None)
+        return IntraEventFormSubmission.objects.filter(event_name=event_name, payment_status='Pending')
+    
+class IntraEventFormSubmissionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = IntraEventFormSubmission.objects.all()
+    serializer_class = IntraEventFormSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrInterviewer]
+    def perform_update(self, serializer):
+        serializer.save(approved_by=self.request.user.name)
+    def get_serializer(self, *args, **kwargs):
+        serializer = super().get_serializer(*args, **kwargs)
+        if 'approved_by' in serializer.fields:
+            serializer.fields['approved_by'].read_only = True
+        return serializer

@@ -13,7 +13,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ('name', 'is_verified', 'date_of_birth', 'insta_link', 'position', 'robu_department','is_admin', 'student_id', 'secondary_email', 'phone_number', 'avatar', 'rs_status', 'facebook_profile', 'linkedin_link', 'bracu_start' , 'blood_group', 'gender', 'org')
         read_only_fields = ('robu_department','is_admin','position', 'is_verified')
-        
+
+class UserNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('name', 'is_verified')
+        read_only_fields = ('name', 'is_verified')       
+
 class RobuSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

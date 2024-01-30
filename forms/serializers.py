@@ -1,7 +1,7 @@
 # serializers.py
 from rest_framework import serializers
-from .models import Applicant
-from accounts.serializers import RobuSerializer
+from .models import Applicant, IntraEventFormSubmission
+from accounts.serializers import RobuSerializer, UserNameSerializer
 
 
 class InterviewSerializer(serializers.ModelSerializer):
@@ -17,3 +17,17 @@ class ApplicantsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Applicant
         exclude = ['status', 'interviewed', 'application_date', 'interview_time', 'assigned_department', 'feedback']
+
+
+
+class IntraEventFormSubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IntraEventFormSubmission
+        exclude = ['user', 'approved_by']
+        read_only_fields = ['payment_status']
+
+class IntraEventFormSerializer(serializers.ModelSerializer):
+    user = UserNameSerializer()  
+    class Meta:
+        model = IntraEventFormSubmission
+        fields = '__all__'

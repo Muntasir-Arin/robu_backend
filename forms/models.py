@@ -45,38 +45,40 @@ class IntraEventFormSubmission(models.Model):
     robu_dept_1 = models.CharField(max_length=100, blank=True, null=True)
     gsuit_1 = models.CharField(max_length=100, blank=True, null=True)
     
-    team_member_name_2 = models.CharField(max_length=100)
-    team_member_student_id_2 = models.CharField(max_length=20)
+    team_member_name_2 = models.CharField(max_length=100, blank=True, null=True)
+    team_member_student_id_2 = models.CharField(max_length=20, blank=True, null=True)
     is_robu_member_2 = models.BooleanField(default=False)
     robu_dept_2 = models.CharField(max_length=100, blank=True, null=True)
     gsuit_2 = models.CharField(max_length=100, blank=True, null=True)
 
-    team_member_name_3 = models.CharField(max_length=100)
-    team_member_student_id_3 = models.CharField(max_length=20)
+    team_member_name_3 = models.CharField(max_length=100, blank=True, null=True)
+    team_member_student_id_3 = models.CharField(max_length=20, blank=True, null=True)
     is_robu_member_3 = models.BooleanField(default=False)
     robu_dept_3 = models.CharField(max_length=100, blank=True, null=True)
     gsuit_3 = models.CharField(max_length=100, blank=True, null=True)
 
-    team_member_name_4 = models.CharField(max_length=100)
-    team_member_student_id_4 = models.CharField(max_length=20)
+    team_member_name_4 = models.CharField(max_length=100, blank=True, null=True)
+    team_member_student_id_4 = models.CharField(max_length=20, blank=True, null=True)
     is_robu_member_4 = models.BooleanField(default=False)
     robu_dept_4 = models.CharField(max_length=100, blank=True, null=True)
     gsuit_4 = models.CharField(max_length=100, blank=True, null=True)
 
-    team_member_name_5 = models.CharField(max_length=100)
-    team_member_student_id_5 = models.CharField(max_length=20)
+    team_member_name_5 = models.CharField(max_length=100, blank=True, null=True)
+    team_member_student_id_5 = models.CharField(max_length=20, blank=True, null=True)
     is_robu_member_5 = models.BooleanField(default=False)
     robu_dept_5 = models.CharField(max_length=100, blank=True, null=True)
     gsuit_5 = models.CharField(max_length=100, blank=True, null=True)
 
-    team_member_name_6 = models.CharField(max_length=100)
-    team_member_student_id_6 = models.CharField(max_length=20)
+    team_member_name_6 = models.CharField(max_length=100, blank=True, null=True)
+    team_member_student_id_6 = models.CharField(max_length=20, blank=True, null=True)
     is_robu_member_6 = models.BooleanField(default=False)
     robu_dept_6 = models.CharField(max_length=100, blank=True, null=True)
     gsuit_6 = models.CharField(max_length=100, blank=True, null=True)
 
-    payment_status = models.CharField(max_length=100)
+
+    payment_status = models.CharField(max_length=100, default='Pending')
     transaction_id = models.CharField(max_length=100)
+    approved_by = models.CharField(max_length=100, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     
     class Meta:
