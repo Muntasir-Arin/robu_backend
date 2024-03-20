@@ -60,21 +60,18 @@
 
 <body>
     <div class="container">
-        <div class="logo">
-            <img src="https://scontent.fdac27-1.fna.fbcdn.net/v/t39.30808-6/327277419_883003242749980_4356836240372208496_n.png?stp=dst-jpg&_nc_cat=104&ccb=1-7&_nc_sid=9c7eae&_nc_eui2=AeGAyAhj_xYEy6O9QXT99XuqfsHPZBSHao1-wc9kFIdqjfcRwQ7ZOO-PMmc3VUwbk1_gllXSGUjY0fkuoyyNnhU5&_nc_ohc=7YKh1b5vSX4AX8Pnl6U&_nc_ht=scontent.fdac27-1.fna&oh=00_AfCZ8u5kmgYm5YHYoaWrPwkmi1bmA_t39BYzbawSw4UHcw&oe=65BEC24B"
-                alt="Robotics Club Logo">
-        </div>
+
         <h3>Hello {{ user.name }},</h3>
         <p>Thanks for signing up for Robotics Club of BRAC University!</p>
         <p>We're happy you're here. Let's get your email address verified:</p>
         <div class="">
-            <a href="http://localhost:8000/verify-email/{{ user.id }}/{{ token }}"
+            <a href="http://localhost:3000/verify/{{ user.id }}/{{ token }}"
                 class="verification-link" style="color: #fff; text-decoration: none; display: inline-block; padding: 10px 20px; background-color: #2563eb; border-radius: 5px; transition: background-color 0.3s ease;">Click to Verify Email</a>
         </div>
         <p class="message">
             This link is valid for 24 hours. If you’re having trouble clicking the "Verify Email Address" button, copy and
             paste the URL below into your web browser:
-            <a href="http://localhost:8000/verify-email/{{ user.id }}/{{ token }}">http://localhost:8000/verify-email/{{ user.id }}/{{ token }}</a>
+            <a href="http://localhost:3000/verify/{{ user.id }}/{{ token }}">http://localhost:3000/verify/{{ user.id }}/{{ token }}</a>
         </p>
     </div>
 </body>
