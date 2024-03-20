@@ -53,7 +53,7 @@ class ApplicantsDeleteView(generics.DestroyAPIView):
 
 class ApplicantsInfoView(generics.ListAPIView):
     serializer_class = ApplicantsSerializer
-    permission_classes = [IsAuthenticated,IsAdminOrInterviewer]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user_id = self.request.user.id
@@ -79,7 +79,7 @@ class InterviewUpdateView(generics.UpdateAPIView, generics.RetrieveAPIView):
         return Response(serializer.data)
     
 
-#Intra  Event ----------------------------------------------------------------------------------
+#Event ----------------------------------------------------------------------------------
 class IntraEventFormSubmissionCreateUpdateView(generics.CreateAPIView, generics.UpdateAPIView):
     queryset = IntraEventFormSubmission.objects.all()
     serializer_class = IntraEventFormSubmissionSerializer
