@@ -4,6 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Applicant, IntraEventFormSubmission
 from .serializers import  ApplicantsSerializer, InterviewSerializer, IntraEventFormSerializer, IntraEventFormSubmissionSerializer
+from rest_framework.views import APIView
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 class IsAdminOrInterviewer(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -124,3 +128,67 @@ class IntraEventFormSubmissionRetrieveUpdateDestroyView(generics.RetrieveUpdateD
         if 'approved_by' in serializer.fields:
             serializer.fields['approved_by'].read_only = True
         return serializer
+    
+
+class UnauthorizedEventFormSubmission(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data.pop('user', None)
+
+        serializer = IntraEventFormSubmissionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+#------------------------------------------------------------------
+class UpdatePaymentStatus(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated, IsAdminOrInterviewer]
+    serializer_class = IntraEventFormSerializer
+    queryset = IntraEventFormSubmission.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        transaction_id = request.data.get('transaction_id', None)
+        if transaction_id is None:
+            return Response({'error': 'Transaction ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            form_submission = self.get_queryset().get(transaction_id=transaction_id)
+        except IntraEventFormSubmission.DoesNotExist:
+            return Response({'error': 'Transaction ID not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        form_submission.payment_status = 'Approved'
+        form_submission.save()
+
+        # Send email notification
+        gsuit_1_email = form_submission.gsuit_1
+        if gsuit_1_email:
+            send_mail(
+                subject='Payment Confirmed',
+                message='Your payment has been confirmed.',
+                from_email=None,  # Use the default email address specified in settings.py
+                recipient_list=[gsuit_1_email],
+                fail_silently=False,
+            )
+
+        serializer = self.get_serializer(form_submission)
+        return Response({'Payment Confirmed'}, status=status.HTTP_200_OK)
+    
+class SendEmailAPIView(APIView):
+    def post(self, request):
+        email_address = request.data.get('emailAddress')
+        email_subject = request.data.get('emailSubject')
+        email_body = request.data.get('emailBody')
+
+        try:
+            send_mail(
+                email_subject,
+                email_body,
+                settings.DEFAULT_FROM_EMAIL,
+                [email_address],
+                fail_silently=False,
+            )
+            return Response({'success': True, 'message': 'Email sent successfully.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'success': False, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

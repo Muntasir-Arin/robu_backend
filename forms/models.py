@@ -79,21 +79,19 @@ class IntraEventFormSubmission(models.Model):
     payment_status = models.CharField(max_length=100, default='Pending')
     transaction_id = models.CharField(max_length=100)
     approved_by = models.CharField(max_length=100, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'event_name', 'segment_name'], name='unique_user_event_segment')
-        ]
+
 
     def save(self, *args, **kwargs):
-        existing_submission = IntraEventFormSubmission.objects.filter(
-            user=self.user, 
-            event_name=self.event_name, 
-            segment_name=self.segment_name
-        ).exclude(pk=self.pk).first()
+        if self.user is not None:
+            existing_submission = IntraEventFormSubmission.objects.filter(
+                user=self.user, 
+                event_name=self.event_name, 
+                segment_name=self.segment_name
+            ).exclude(pk=self.pk).first()
+            
+            if existing_submission:
+                raise ValidationError({"detail": "User already has a submission for this event and segment."})
         
-        if existing_submission:
-            raise ValidationError({"detail": "User already has a submission for this event and segment."})
-
         super().save(*args, **kwargs)
