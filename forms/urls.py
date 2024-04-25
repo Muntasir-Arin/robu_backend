@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AllSubmissionsView, ApplicantsCreateView, ApplicantsUpdateView, ApplicantsDeleteView, ApplicantsInfoView, InterviewUpdateView, IntraEventFormSubmissionCreateUpdateView, IntraEventFormSubmissionRetrieveUpdateDestroyView, PendingSubmissionsView, SendEmailAPIView, UnauthorizedEventFormSubmission, UpdatePaymentStatus, UserSpecificSubmissionsView
+from .views import AllSubmissionsView, ApplicantsCreateView, ApplicantsUpdateView, ApplicantsDeleteView, ApplicantsInfoView, InterviewUpdateView, IntraEventFormSubmissionCreateUpdateView, IntraEventFormSubmissionRetrieveUpdateDestroyView, PendingSubmissionsView, SendEmailAPIView, SentimentAnalysisAPIView, UnauthorizedEventFormSubmission, UpdatePaymentStatus, UserSpecificSubmissionsView
 
 urlpatterns = [
     path('applicants/', ApplicantsCreateView.as_view(), name='create-applicant'),
@@ -15,5 +15,7 @@ urlpatterns = [
     path('intra-event/unauthorized-submit/', UnauthorizedEventFormSubmission.as_view(), name='unauthorized_event_form_submission'),
     path('email/', SendEmailAPIView.as_view(), name='send_email'),
     path('intra-event/update-payment-status/', UpdatePaymentStatus.as_view(), name='update_payment_status'),
+    path('extern-feedback/', SentimentAnalysisAPIView.as_view(), name='feedback analyze_sentiment'),
+
 
 ]

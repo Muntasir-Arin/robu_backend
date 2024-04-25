@@ -2,11 +2,18 @@ from rest_framework import generics, permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Applicant, IntraEventFormSubmission
+from .models import Applicant, EventFeedbackExternal, IntraEventFormSubmission
 from .serializers import  ApplicantsSerializer, InterviewSerializer, IntraEventFormSerializer, IntraEventFormSubmissionSerializer
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from django.conf import settings
+from transformers import AlbertTokenizer, AlbertForSequenceClassification
+import torch
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import re
+
+#python -m nltk.downloader punkt
 
 
 class IsAdminOrInterviewer(permissions.BasePermission):
@@ -192,3 +199,77 @@ class SendEmailAPIView(APIView):
             return Response({'success': True, 'message': 'Email sent successfully.'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'success': False, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+#----------------------------------------------
+class SentimentAnalysisAPIView(APIView):
+    def get(self, request, format=None):
+        positive_count = EventFeedbackExternal.objects.filter(sentiment='Positive').count()
+        negative_count = EventFeedbackExternal.objects.filter(sentiment='Negative').count()
+
+        return Response({
+            'positive_count': positive_count,
+            'negative_count': negative_count
+        }, status=status.HTTP_200_OK)
+    def preprocess_text(self, text):
+        # Convert text to lowercase
+        text = text.lower()
+        
+        # Remove special characters and punctuation
+        text = re.sub(r'[^a-zA-Z\s]', '', text)
+        
+        # Tokenize the text
+        tokens = word_tokenize(text)
+        
+        # Remove common connective words (stop words)
+        stop_words = set(stopwords.words('english'))
+        filtered_tokens = [word for word in tokens if word not in stop_words]
+        
+        # Join filtered tokens back into a string
+        filtered_text = ' '.join(filtered_tokens)
+        
+        return filtered_text
+    def post(self, request, format=None):
+        print(request.data)
+        text = request.data.get('text')
+        event_name = request.data.get('event_name')
+        email = request.data.get('email')
+        participant = request.data.get('participant')
+
+        if not text:
+            return Response({'error': 'Text input is required'}, status=400)
+
+        # Initialize tokenizer and model
+        tokenizer = AlbertTokenizer.from_pretrained('albert-base-v2')
+        model = AlbertForSequenceClassification.from_pretrained('albert-base-v2', num_labels=2)
+
+        # Encode text
+        main_text= text
+        text = self.preprocess_text(text)
+        input_ids = tokenizer.encode(text, add_special_tokens=True, return_tensors="pt")
+
+        # Predict
+        outputs = model(input_ids)
+        logits = outputs.logits
+
+        # Process logits
+        predicted_class_id = logits.argmax(dim=1).item()
+        sentiment_labels = ["Negative", "Positive"]
+        predicted_label = sentiment_labels[predicted_class_id]
+
+        # Store the sentiment analysis result in the database
+        feedback = EventFeedbackExternal.objects.create(
+            event_name=event_name,
+            email=email,
+            participant=participant,
+            sentiment=predicted_label,
+            text=main_text
+        )
+
+        return Response({
+            'sentiment': predicted_label,
+            'result_id': feedback.id,
+            'text': main_text,
+            'event_name': event_name,
+            'email': email,
+            'participant': participant,
+        })

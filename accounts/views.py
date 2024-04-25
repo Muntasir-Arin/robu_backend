@@ -77,15 +77,20 @@ class PrivateUserProfileView(generics.RetrieveAPIView):
     serializer_class = PublicUserSerializer
     lookup_field = 'id'
 
-class RobuUpdateView(generics.ListCreateAPIView, generics.RetrieveUpdateDestroyAPIView):
+class RobuRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = RobuSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrPresident]
 
     def get_object(self):
-        obj = self.get_queryset().get(id=self.kwargs["pk"])
+        obj = self.get_queryset().get(id=self.kwargs["id"])
         self.check_object_permissions(self.request, obj)
         return obj
+
+class RobuListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = RobuSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrPresident]
 
 class PanelListAPIView(generics.ListAPIView):
     serializer_class = PanelSerializer

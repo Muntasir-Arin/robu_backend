@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import CurrentPanelListAPIView, MemberListView, PanelListAPIView, PrivateUserProfileView, PublicUserProfileView, ResendVerificationEmailView, RobuUpdateView, UserProfileUpdateView, VerifyEmailView
+from .views import CurrentPanelListAPIView, MemberListView, PanelListAPIView, PrivateUserProfileView, PublicUserProfileView, ResendVerificationEmailView, RobuListView, RobuRetrieveUpdateDestroyView, UserProfileUpdateView, VerifyEmailView
 
 urlpatterns = [
     path('auth/', include('djoser.urls')),
@@ -8,8 +8,8 @@ urlpatterns = [
     path('profile/<int:student_id>/', PublicUserProfileView.as_view(), name='public-profile'),
     path('private-profile/<int:id>/', PrivateUserProfileView.as_view(), name='private-profile'),
     path('panels/', PanelListAPIView.as_view(), name='panel-list'),
-    path('secure/', RobuUpdateView.as_view(), name='user-list'),
-    path('secure/<int:pk>/', RobuUpdateView.as_view(), name='user-detail'),
+    path('secure/', RobuListView.as_view(), name='user-list'),
+    path('secure/<int:id>/', RobuRetrieveUpdateDestroyView.as_view(), name='user-detail'),
     path('current-panels/', CurrentPanelListAPIView.as_view(), name='curr-panel-list'),
     path('member-list/', MemberListView.as_view(), name='member-list'),
     path('auth/verify-email/<int:user_id>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),

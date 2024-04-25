@@ -95,3 +95,11 @@ class IntraEventFormSubmission(models.Model):
                 raise ValidationError({"detail": "User already has a submission for this event and segment."})
         
         super().save(*args, **kwargs)
+
+
+class EventFeedbackExternal(models.Model):
+    event_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    participant = models.BooleanField(default=False)
+    sentiment = models.CharField(max_length=10)
+    text = models.TextField()
