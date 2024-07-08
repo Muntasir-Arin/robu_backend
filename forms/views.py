@@ -7,12 +7,6 @@ from .serializers import  ApplicantsSerializer, InterviewSerializer, IntraEventF
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from django.conf import settings
-from transformers import AlbertTokenizer, AlbertForSequenceClassification
-import torch
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-import re
-
 #python -m nltk.downloader punkt
 
 
