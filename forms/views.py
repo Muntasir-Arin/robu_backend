@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Applicant, EventFeedbackExternal, IntraEventFormSubmission
 from .serializers import  ApplicantsSerializer, InterviewSerializer, IntraEventFormSerializer, IntraEventFormSubmissionSerializer
 from rest_framework.views import APIView
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
 from django.conf import settings
 #python -m nltk.downloader punkt
 
@@ -164,14 +164,14 @@ class UpdatePaymentStatus(generics.UpdateAPIView):
 
         # Send email notification
         gsuit_1_email = form_submission.gsuit_1
-        if gsuit_1_email:
-            send_mail(
-                subject='Payment Confirmed',
-                message='Your payment has been confirmed.',
-                from_email=None,  # Use the default email address specified in settings.py
-                recipient_list=[gsuit_1_email],
-                fail_silently=False,
-            )
+        # if gsuit_1_email:
+        #     send_mail(
+        #         subject='Payment Confirmed',
+        #         message='Your payment has been confirmed.',
+        #         from_email=None,  # Use the default email address specified in settings.py
+        #         recipient_list=[gsuit_1_email],
+        #         fail_silently=False,
+        #     )
 
         serializer = self.get_serializer(form_submission)
         return Response({'Payment Confirmed'}, status=status.HTTP_200_OK)
@@ -183,17 +183,17 @@ class SendEmailAPIView(APIView):
         email_subject = request.data.get('emailSubject')
         email_body = request.data.get('emailBody')
 
-        try:
-            send_mail(
-                email_subject,
-                email_body,
-                settings.DEFAULT_FROM_EMAIL,
-                [email_address],
-                fail_silently=False,
-            )
-            return Response({'success': True, 'message': 'Email sent successfully.'}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'success': False, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # try:
+        #     send_mail(
+        #         email_subject,
+        #         email_body,
+        #         settings.DEFAULT_FROM_EMAIL,
+        #         [email_address],
+        #         fail_silently=False,
+        #     )
+        #     return Response({'success': True, 'message': 'Email sent successfully.'}, status=status.HTTP_200_OK)
+        # except Exception as e:
+        #     return Response({'success': False, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 #----------------------------------------------
 # class SentimentAnalysisAPIView(APIView):

@@ -14,7 +14,7 @@ from rest_framework import status
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -178,4 +178,4 @@ class ResendVerificationEmailView(APIView):
         message = render_to_string('email/verification_email.html', {'user': user, 'token': token})
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [user.email]
-        send_mail(subject, message, from_email, recipient_list, html_message=message, fail_silently=False)
+        # send_mail(subject, message, from_email, recipient_list, html_message=message, fail_silently=False)
