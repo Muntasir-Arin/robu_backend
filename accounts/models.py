@@ -28,19 +28,18 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, name, date_of_birth=None, student_id=None, secondary_email=None, phone_number=None,
-                         position='Not a Member', department=None, avatar=None, rs_status=None, facebook_profile=None,
-                         linkedin_link=None, robu_start=None, robu_end=None, bracu_start=None, password=None):
+    def create_superuser(self, email, name, org, date_of_birth=None, student_id=None, secondary_email=None, phone_number=None,
+                         department=None, rs_status=None, facebook_profile=None,
+                         linkedin_link=None, robu_start=None, robu_end=None, bracu_start=None, password=None, is_admin = True):
         user = self.create_user(
             email=email,
             name=name,
+            org=org,
             date_of_birth=date_of_birth,
             student_id=student_id,
             secondary_email=secondary_email,
             phone_number=phone_number,
-            position=position,
             department=department,
-            avatar=avatar,
             rs_status=rs_status,
             facebook_profile=facebook_profile,
             linkedin_link=linkedin_link,
@@ -50,6 +49,7 @@ class UserManager(BaseUserManager):
             password=password,
         )
         user.is_admin = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
