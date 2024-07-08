@@ -39,6 +39,7 @@ class UserProfileUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     def update(self, request, *args, **kwargs):
+        print(request.data)
         return super().update(request, *args, **kwargs)
 
     def get_object(self):
