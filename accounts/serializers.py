@@ -11,7 +11,7 @@ from django.utils.encoding import force_bytes
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ( "email", 'name', 'is_verified', 'date_of_birth', 'insta_link', 'position', 'robu_department','is_admin', 'student_id', 'secondary_email', 'phone_number', 'rs_status', 'facebook_profile', 'linkedin_link', 'bracu_start' , 'blood_group', 'gender', 'org')
+        fields = ( "email", 'name', 'is_verified', 'date_of_birth', 'insta_link', 'position', 'robu_department','is_admin', 'student_id', 'secondary_email', 'phone_number', 'rs_status', 'facebook_profile', 'linkedin_link', 'bracu_start' , 'blood_group', 'gender', 'org', 'avatar')
         read_only_fields = ('robu_department','is_admin','position', 'is_verified')
 
 class UserNameSerializer(serializers.ModelSerializer):
