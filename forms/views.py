@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Applicant, EventFeedbackExternal, IntraEventFormSubmission
 from .serializers import  ApplicantsSerializer, InterviewSerializer, IntraEventFormSerializer, IntraEventFormSubmissionSerializer
 from rest_framework.views import APIView
-# from django.core.mail import send_mail
+from django.core.mail import send_mail
 from django.conf import settings
 #python -m nltk.downloader punkt
 
@@ -183,17 +183,17 @@ class SendEmailAPIView(APIView):
         email_subject = request.data.get('emailSubject')
         email_body = request.data.get('emailBody')
 
-        # try:
-        #     send_mail(
-        #         email_subject,
-        #         email_body,
-        #         settings.DEFAULT_FROM_EMAIL,
-        #         [email_address],
-        #         fail_silently=False,
-        #     )
-        #     return Response({'success': True, 'message': 'Email sent successfully.'}, status=status.HTTP_200_OK)
-        # except Exception as e:
-        #     return Response({'success': False, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            send_mail(
+                email_subject,
+                email_body,
+                settings.DEFAULT_FROM_EMAIL,
+                [email_address],
+                fail_silently=False,
+            )
+            return Response({'success': True, 'message': 'Email sent successfully.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'success': False, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 #----------------------------------------------
 # class SentimentAnalysisAPIView(APIView):
